@@ -1,0 +1,52 @@
+{
+  "name": "kute",
+  "version": "0.0.1",
+  "description": "A minimalistic queue library based on Redis inspired by OST",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "redis": "^0.12.1",
+    "jshint": "^2.8.0",
+    "jscs": "^1.13.1",
+    "pre-commit": "^1.0.10",
+    "tape": "^4.0.0"
+  },
+  "scripts": {
+    "test": "node test.js",
+    "jshint": "jshint index.js test.js examples/*.js",
+    "jscs": "jscs index.js test.js examples/*.js",
+    "ci": "npm run test && npm run jshint && npm run jscs"
+  },
+  "pre-commit": [ "ci" ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/moonglum/kute"
+  },
+  "keywords": [
+    "queue",
+    "redis"
+  ],
+  "author": "Lucas Dohmen <lucas@dohmen.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/moonglum/kute/issues"
+  },
+  "homepage": "https://github.com/moonglum/kute",
+  "jshintConfig": {
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "freeze": true,
+    "latedef": true,
+    "nonew": true,
+    "shadow": "outer",
+    "undef": true,
+    "unused": true,
+    "node": true,
+    "jasmine": true
+  },
+  "jscsConfig": {
+    "preset": "node-style-guide",
+    "maximumLineLength": 120
+  }
+}
