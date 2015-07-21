@@ -74,6 +74,7 @@ By the way: You can also consume entries created by OST or create entries to be 
 You can provide optional parameters in the form of an Object as a third argument to the Queue constructor:
 
 * `timeout`: If you want the `dequeue` operation to time out after not receiving a job for a certain time (because no one enqueued any values), you can set this option to a value in seconds. Per default, there is no timeout. If you run into a Timeout, you will receive a `TimeoutError` as the first argument to your `dequeue` handler.
+* `prefix`: The default `prefix` of the created Redis entries is `ost`, but you can change it with this option.
 
 ## Differences to OST (and other queues)
 

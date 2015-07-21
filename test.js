@@ -114,6 +114,18 @@ test('Timeout', function(t) {
   });
 });
 
+test('Name of the key', function(t) {
+  var client = require('redis').createClient();
+  var q1 = new Queue('test', client);
+  t.equal(q1.key, 'ost:test');
+
+  var q2 = new Queue('test', client, { prefix: 'kute' });
+  t.equal(q2.key, 'kute:test');
+
+  t.end();
+  client.quit();
+});
+
 test('Examples', function(t) {
   var consumer = childProcess.spawn('node', ['examples/consumer.js']);
 

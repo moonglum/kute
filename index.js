@@ -9,8 +9,9 @@ inherits(TimeoutError, Error);
 
 var Queue = function(name, redis, opts) {
   opts = opts || {};
-  this.key = nido(['ost', name]);
-  this.progress = nido(['ost', name, 'progress']);
+  var prefix = opts.prefix || 'ost';
+  this.key = nido([prefix, name]);
+  this.progress = nido([prefix, name, 'progress']);
   this.redis = redis;
   this.timeout = opts.timeout || 0;
 };
