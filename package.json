@@ -1,6 +1,6 @@
 {
   "name": "kute",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A minimalistic queue library based on Redis inspired by OST",
   "main": "index.js",
   "dependencies": {},
