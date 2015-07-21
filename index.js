@@ -1,4 +1,3 @@
-var queues = {};
 var nido = function(arr) { return arr.join(':'); };
 
 var Queue = function(name, redis, timeout) {
@@ -47,13 +46,3 @@ Queue.prototype.itemsInProgress = function(cb) {
 };
 
 exports.Queue = Queue;
-
-exports.queue = function(name) {
-  if (!queues.hasOwnProperty(name)) {
-    queues[name] = new Queue(name, this.redis, this.timeout);
-  }
-
-  return queues[name];
-};
-
-exports.timeout = '2';
