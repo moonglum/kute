@@ -5,7 +5,7 @@ var Queue = require('../').Queue;
 
 var workerPool = new EventEmitter();
 workerPool.setMaxListeners(1);
-var queue = new Queue('a', client, 2);
+var queue = new Queue('a', client);
 
 var publish = function(error, result) {
   if (error) {

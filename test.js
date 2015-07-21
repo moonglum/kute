@@ -8,8 +8,8 @@ test('Push and Pop', function(t) {
   var producerClient = require('redis').createClient();
   var consumerClient = require('redis').createClient();
 
-  var producer = new Queue(prefix + 'pnp', producerClient, 2);
-  var consumer = new Queue(prefix + 'pnp', consumerClient, 2);
+  var producer = new Queue(prefix + 'pnp', producerClient, { timeout: 2 });
+  var consumer = new Queue(prefix + 'pnp', consumerClient, { timeout: 2 });
 
   consumer.dequeue(function(error, message, done) {
     done();
@@ -26,7 +26,7 @@ test('Push and Pop', function(t) {
 test('Size', function(t) {
   var producerClient = require('redis').createClient();
 
-  var producer = new Queue(prefix + 'size', producerClient, 2);
+  var producer = new Queue(prefix + 'size', producerClient, { timeout: 2 });
 
   producer.size(function(err, size) {
     t.equal(size, 0);
@@ -44,7 +44,7 @@ test('Size', function(t) {
 test('Items', function(t) {
   var producerClient = require('redis').createClient();
 
-  var producer = new Queue(prefix + 'items', producerClient, 2);
+  var producer = new Queue(prefix + 'items', producerClient, { timeout: 2 });
 
   producer.items(function(err, items) {
     t.deepEqual(items, []);
@@ -63,8 +63,8 @@ test('Remove from `progress` when worker succeeded', function(t) {
   var producerClient = require('redis').createClient();
   var consumerClient = require('redis').createClient();
 
-  var producer = new Queue(prefix + 'emptybu', producerClient, 2);
-  var consumer = new Queue(prefix + 'emptybu', consumerClient, 2);
+  var producer = new Queue(prefix + 'emptybu', producerClient, { timeout: 2 });
+  var consumer = new Queue(prefix + 'emptybu', consumerClient, { timeout: 2 });
 
   consumer.dequeue(function(error, message, done) {
     done();
@@ -85,8 +85,8 @@ test('Keep in `progress` when worker failed', function(t) {
   var producerClient = require('redis').createClient();
   var consumerClient = require('redis').createClient();
 
-  var producer = new Queue(prefix + 'bu', producerClient, 2);
-  var consumer = new Queue(prefix + 'bu', consumerClient, 2);
+  var producer = new Queue(prefix + 'bu', producerClient, { timeout: 2 });
+  var consumer = new Queue(prefix + 'bu', consumerClient, { timeout: 2 });
 
   consumer.dequeue(function(error, message, done) {
     done(new Error('oh no'));
@@ -105,7 +105,7 @@ test('Keep in `progress` when worker failed', function(t) {
 
 test('Timeout', function(t) {
   var consumerClient = require('redis').createClient();
-  var consumer = new Queue(prefix + 'timeout', consumerClient, 1);
+  var consumer = new Queue(prefix + 'timeout', consumerClient, { timeout: 1 });
 
   consumer.dequeue(function(error) {
     t.ok(error instanceof TimeoutError, 'Should be a TimeoutError');
