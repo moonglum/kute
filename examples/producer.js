@@ -1,8 +1,7 @@
 var client = require('redis').createClient();
-var Kute = require('../');
+var Queue = require('../').Queue;
+var queue = new Queue('a', client, 2);
 
-Kute.redis = client;
-
-Kute.queue('a').enqueue('test message', function() {
+queue.enqueue('test message', function() {
   process.exit();
 });

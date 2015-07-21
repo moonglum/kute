@@ -1,12 +1,11 @@
 var client = require('redis').createClient();
 var EventEmitter = require('events').EventEmitter;
 var capacity = 1;
-var Kute = require('../');
-
-Kute.redis = client;
+var Queue = require('../').Queue;
 
 var workerPool = new EventEmitter();
 workerPool.setMaxListeners(1);
+var queue = new Queue('a', client, 2);
 
 var publish = function(error, result) {
   if (error) {
@@ -17,7 +16,7 @@ var publish = function(error, result) {
 };
 
 workerPool.on('free', function(worker) {
-  Kute.queue('a').dequeue(function(error, message, done) {
+  queue.dequeue(function(error, message, done) {
     if (error) {
       publish(error);
       workerPool.emit('free', worker);
