@@ -55,7 +55,15 @@ Get all items that are on the queue:
 
 ```js
 queue.items(function(err, items) {
-  console.log('There are the following items on the queue:', queue);
+  console.log('There are the following items on the queue:', items);
+});
+```
+
+Get all items that are in progress:
+
+```js
+queue.itemsInProgress(function(err, progress) {
+  console.log('There are the following items on the queue:', progress);
 });
 ```
 

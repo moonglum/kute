@@ -68,8 +68,7 @@ test('Remove from `progress` when worker succeeded', function(t) {
   consumer.dequeue(function(error, message, done) {
     done();
 
-    consumerClient.lrange([consumer.progress, 0, -1], function(listError, progress) {
-      console.log(listError);
+    consumer.itemsInProgress(function(listError, progress) {
       t.deepEqual(progress, []);
       t.end();
       consumerClient.quit();
@@ -91,7 +90,7 @@ test('Keep in `progress` when worker failed', function(t) {
   consumer.dequeue(function(error, message, done) {
     done(new Error('oh no'));
 
-    consumerClient.lrange([consumer.progress, 0, -1], function(listError, progress) {
+    consumer.itemsInProgress(function(listError, progress) {
       t.deepEqual(progress, [ 'mymessage' ]);
       t.end();
       consumerClient.quit();

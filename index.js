@@ -42,6 +42,10 @@ Queue.prototype.size = function(cb) {
   this.redis.llen([this.key], cb);
 };
 
+Queue.prototype.itemsInProgress = function(cb) {
+  this.redis.lrange([this.progress, 0, -1], cb);
+};
+
 exports.Queue = Queue;
 
 exports.queue = function(name) {
