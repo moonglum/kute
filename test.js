@@ -58,6 +58,50 @@ test('Items', function(t) {
   });
 });
 
+test('Remove from `progress` when worker succeeded', function(t) {
+  var producerClient = require('redis').createClient();
+  var consumerClient = require('redis').createClient();
+
+  var producer = new Queue(prefix + 'emptybu', producerClient, 2);
+  var consumer = new Queue(prefix + 'emptybu', consumerClient, 2);
+
+  consumer.dequeue(function(error, message, done) {
+    done();
+
+    consumer.itemsInProgress(function(listError, progress) {
+      t.deepEqual(progress, []);
+      t.end();
+      consumerClient.quit();
+    });
+  });
+
+  producer.enqueue('mymessage', function() {
+    producerClient.quit();
+  });
+});
+
+test('Keep in `progress` when worker failed', function(t) {
+  var producerClient = require('redis').createClient();
+  var consumerClient = require('redis').createClient();
+
+  var producer = new Queue(prefix + 'bu', producerClient, 2);
+  var consumer = new Queue(prefix + 'bu', consumerClient, 2);
+
+  consumer.dequeue(function(error, message, done) {
+    done(new Error('oh no'));
+
+    consumer.itemsInProgress(function(listError, progress) {
+      t.deepEqual(progress, [ 'mymessage' ]);
+      t.end();
+      consumerClient.quit();
+    });
+  });
+
+  producer.enqueue('mymessage', function() {
+    producerClient.quit();
+  });
+});
+
 test('Examples', function(t) {
   var consumer = childProcess.spawn('node', ['examples/consumer.js']);
 

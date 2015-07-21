@@ -1,10 +1,9 @@
-var os = require('os');
 var queues = {};
 var nido = function(arr) { return arr.join(':'); };
 
 var Queue = function(name, redis, timeout) {
   this.key = nido(['ost', name]);
-  this.backup = nido(['ost', name, os.hostname(), process.pid]);
+  this.progress = nido(['ost', name, 'progress']);
   this.redis = redis;
   this.timeout = timeout;
 };
@@ -15,17 +14,19 @@ Queue.prototype.enqueue = function(value, cb) {
 
 Queue.prototype.dequeue = function(cb) {
   var redis = this.redis;
-  var backup = this.backup;
+  var progress = this.progress;
 
-  this.redis.brpoplpush([this.key, this.backup, this.timeout], function(err, reply) {
+  this.redis.brpoplpush([this.key, this.progress, this.timeout], function(err, reply) {
     if (err) {
       cb(err);
       return;
     }
 
     if (reply) {
-      cb(null, reply, function() {
-        redis.lpop([backup]);
+      cb(null, reply, function(consumerError) {
+        if (!consumerError) {
+          redis.lrem([progress, 1, reply], function() {});
+        }
       });
     } else {
       cb(new Error('Timeout'));
@@ -39,6 +40,10 @@ Queue.prototype.items = function(cb) {
 
 Queue.prototype.size = function(cb) {
   this.redis.llen([this.key], cb);
+};
+
+Queue.prototype.itemsInProgress = function(cb) {
+  this.redis.lrange([this.progress, 0, -1], cb);
 };
 
 exports.Queue = Queue;
