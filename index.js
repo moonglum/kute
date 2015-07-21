@@ -3,7 +3,7 @@ var nido = function(arr) { return arr.join(':'); };
 
 var Queue = function(name, redis, timeout) {
   this.key = nido(['ost', name]);
-  this.backup = nido(['ost', name, 'backup']);
+  this.progress = nido(['ost', name, 'progress']);
   this.redis = redis;
   this.timeout = timeout;
 };
@@ -14,9 +14,9 @@ Queue.prototype.enqueue = function(value, cb) {
 
 Queue.prototype.dequeue = function(cb) {
   var redis = this.redis;
-  var backup = this.backup;
+  var progress = this.progress;
 
-  this.redis.brpoplpush([this.key, this.backup, this.timeout], function(err, reply) {
+  this.redis.brpoplpush([this.key, this.progress, this.timeout], function(err, reply) {
     if (err) {
       cb(err);
       return;
@@ -25,7 +25,7 @@ Queue.prototype.dequeue = function(cb) {
     if (reply) {
       cb(null, reply, function(consumerError) {
         if (!consumerError) {
-          redis.lrem([backup, 1, reply], function() {});
+          redis.lrem([progress, 1, reply], function() {});
         }
       });
     } else {

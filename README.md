@@ -67,7 +67,7 @@ OST offers an `each` method that yields to a block for every new entry on the qu
 
 About enqueue/dequeue: In the parlance of Redis, enqueue is `lpush` and dequeue is `rpop`. But I prefer to use the terminology used for the abstract data type [queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)).
 
-Kute keeps entries that are being processed with one central `backup` list (opposed to Kute, which uses [one per worker](https://github.com/soveran/ost#failures) as suggested in the [reliable queue pattern](http://redis.io/commands/rpoplpush#pattern-reliable-queue). If a consumer reports an error in the `done` callback, the entry will not be removed from the backup list. You can monitor the backup list to keep track of entries that stay in there too long (because the worker crashed or ran into an error).
+Kute keeps entries that are being processed with one central `progress` list (opposed to Kute, which uses [one per worker](https://github.com/soveran/ost#failures) as suggested in the [reliable queue pattern](http://redis.io/commands/rpoplpush#pattern-reliable-queue). If a consumer reports an error in the `done` callback, the entry will not be removed from the progress list. You can monitor the progress list to keep track of entries that stay in there too long (because the worker crashed or ran into an error).
 
 ## Anti-Features
 
@@ -76,7 +76,7 @@ You might say: "Hu? A queue based on Redis? But... But... Redis is not a queue!"
 * **Only a message, no data:** Your worker knows how to get the data. It could access the database for that or you could use something like [storage-pod](https://github.com/moonglum/storage-pod).
 * **No events for finished or failed events:** You can use Redis PubSub if you need it. If you need that feature it could also mean that you should use a [MOM](https://en.wikipedia.org/wiki/Message_oriented_middleware).
 * **No monitoring:** And you might not need it. We for example use a central logging and monitoring solution to see the throughput of our queue etc.
-* **No retries:** But you could implement that by monitoring the `backup` list.
+* **No retries:** But you could implement that by monitoring the `progress` list.
 * **No priorities**
 * **No delayed jobs or scheduling.**
 * **No web interface.**

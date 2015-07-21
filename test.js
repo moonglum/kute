@@ -58,7 +58,7 @@ test('Items', function(t) {
   });
 });
 
-test('Keep no Backup when worker succeeded', function(t) {
+test('Remove from `progress` when worker succeeded', function(t) {
   var producerClient = require('redis').createClient();
   var consumerClient = require('redis').createClient();
 
@@ -68,9 +68,9 @@ test('Keep no Backup when worker succeeded', function(t) {
   consumer.dequeue(function(error, message, done) {
     done();
 
-    consumerClient.lrange([consumer.backup, 0, -1], function(listError, backup) {
+    consumerClient.lrange([consumer.progress, 0, -1], function(listError, progress) {
       console.log(listError);
-      t.deepEqual(backup, []);
+      t.deepEqual(progress, []);
       t.end();
       consumerClient.quit();
     });
@@ -81,7 +81,7 @@ test('Keep no Backup when worker succeeded', function(t) {
   });
 });
 
-test('Keep Backup when worker failed', function(t) {
+test('Keep in `progress` when worker failed', function(t) {
   var producerClient = require('redis').createClient();
   var consumerClient = require('redis').createClient();
 
@@ -91,8 +91,8 @@ test('Keep Backup when worker failed', function(t) {
   consumer.dequeue(function(error, message, done) {
     done(new Error('oh no'));
 
-    consumerClient.lrange([consumer.backup, 0, -1], function(listError, backup) {
-      t.deepEqual(backup, [ 'mymessage' ]);
+    consumerClient.lrange([consumer.progress, 0, -1], function(listError, progress) {
+      t.deepEqual(progress, [ 'mymessage' ]);
       t.end();
       consumerClient.quit();
     });
