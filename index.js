@@ -1,10 +1,9 @@
-var os = require('os');
 var queues = {};
 var nido = function(arr) { return arr.join(':'); };
 
 var Queue = function(name, redis, timeout) {
   this.key = nido(['ost', name]);
-  this.backup = nido(['ost', name, os.hostname(), process.pid]);
+  this.backup = nido(['ost', name, 'backup']);
   this.redis = redis;
   this.timeout = timeout;
 };
@@ -24,8 +23,10 @@ Queue.prototype.dequeue = function(cb) {
     }
 
     if (reply) {
-      cb(null, reply, function() {
-        redis.lpop([backup]);
+      cb(null, reply, function(consumerError) {
+        if (!consumerError) {
+          redis.lrem([backup, 1, reply], function() {});
+        }
       });
     } else {
       cb(new Error('Timeout'));

@@ -58,6 +58,51 @@ test('Items', function(t) {
   });
 });
 
+test('Keep no Backup when worker succeeded', function(t) {
+  var producerClient = require('redis').createClient();
+  var consumerClient = require('redis').createClient();
+
+  var producer = new Queue(prefix + 'emptybu', producerClient, 2);
+  var consumer = new Queue(prefix + 'emptybu', consumerClient, 2);
+
+  consumer.dequeue(function(error, message, done) {
+    done();
+
+    consumerClient.lrange([consumer.backup, 0, -1], function(listError, backup) {
+      console.log(listError);
+      t.deepEqual(backup, []);
+      t.end();
+      consumerClient.quit();
+    });
+  });
+
+  producer.enqueue('mymessage', function() {
+    producerClient.quit();
+  });
+});
+
+test('Keep Backup when worker failed', function(t) {
+  var producerClient = require('redis').createClient();
+  var consumerClient = require('redis').createClient();
+
+  var producer = new Queue(prefix + 'bu', producerClient, 2);
+  var consumer = new Queue(prefix + 'bu', consumerClient, 2);
+
+  consumer.dequeue(function(error, message, done) {
+    done(new Error('oh no'));
+
+    consumerClient.lrange([consumer.backup, 0, -1], function(listError, backup) {
+      t.deepEqual(backup, [ 'mymessage' ]);
+      t.end();
+      consumerClient.quit();
+    });
+  });
+
+  producer.enqueue('mymessage', function() {
+    producerClient.quit();
+  });
+});
+
 test('Examples', function(t) {
   var consumer = childProcess.spawn('node', ['examples/consumer.js']);
 
