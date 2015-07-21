@@ -16,18 +16,16 @@ Enqueue an entry:
 
 ```js
 var producerClient = require('redis').createClient();
-var producer = new Queue('queuename', producerClient, 2);
+var producer = new Queue('queuename', producerClient);
 producer.enqueue('mymessage', function(error) {
 });
 ```
-
-The error can either be an error coming from Redis or a `TimeoutError` (if you set the timeout to something other than 0).
 
 Dequeue an entry:
 
 ```js
 var consumerClient = require('redis').createClient();
-var consumer = new Queue('queuename', consumerClient, 2);
+var consumer = new Queue('queuename', consumerClient);
 consumer.dequeue(function(error, entry, done) {
   console.log('I just got the entry "', entry, '" from the queue');
   done();
@@ -38,7 +36,7 @@ Dequeue an entry and hit an error:
 
 ```js
 var consumerClient = require('redis').createClient();
-var consumer = new Queue('queuename', consumerClient, 2);
+var consumer = new Queue('queuename', consumerClient);
 consumer.dequeue(function(error, entry, done) {
   console.log('I had an error while processing');
   done(new Error('darn it'));
@@ -70,6 +68,13 @@ queue.itemsInProgress(function(err, progress) {
 ```
 
 By the way: You can also consume entries created by OST or create entries to be consumed by OST (This is the reason it uses an `ost` prefix in Redis instead of a `kute` prefix).
+
+### Options
+
+You can provide optional parameters in the form of an Object as a third argument to the Queue constructor:
+
+* `timeout`: If you want the `dequeue` operation to time out after not receiving a job for a certain time (because no one enqueued any values), you can set this option to a value in seconds. Per default, there is no timeout. If you run into a Timeout, you will receive a `TimeoutError` as the first argument to your `dequeue` handler.
+* `prefix`: The default `prefix` of the created Redis entries is `ost`, but you can change it with this option.
 
 ## Differences to OST (and other queues)
 

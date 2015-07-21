@@ -7,11 +7,13 @@ var TimeoutError = function(message) {
 };
 inherits(TimeoutError, Error);
 
-var Queue = function(name, redis, timeout) {
-  this.key = nido(['ost', name]);
-  this.progress = nido(['ost', name, 'progress']);
+var Queue = function(name, redis, opts) {
+  opts = opts || {};
+  var prefix = opts.prefix || 'ost';
+  this.key = nido([prefix, name]);
+  this.progress = nido([prefix, name, 'progress']);
   this.redis = redis;
-  this.timeout = timeout;
+  this.timeout = opts.timeout || 0;
 };
 
 Queue.prototype.enqueue = function(value, cb) {
