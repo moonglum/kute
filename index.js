@@ -1,4 +1,11 @@
+var inherits = require('util').inherits;
 var nido = function(arr) { return arr.join(':'); };
+
+var TimeoutError = function(message) {
+  this.name = 'TimeoutError';
+  this.message = message;
+};
+inherits(TimeoutError, Error);
 
 var Queue = function(name, redis, timeout) {
   this.key = nido(['ost', name]);
@@ -28,7 +35,7 @@ Queue.prototype.dequeue = function(cb) {
         }
       });
     } else {
-      cb(new Error('Timeout'));
+      cb(new TimeoutError('Timeout'));
     }
   });
 };
@@ -46,3 +53,4 @@ Queue.prototype.itemsInProgress = function(cb) {
 };
 
 exports.Queue = Queue;
+exports.TimeoutError = TimeoutError;

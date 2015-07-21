@@ -21,6 +21,8 @@ producer.enqueue('mymessage', function(error) {
 });
 ```
 
+The error can either be an error coming from Redis or a `TimeoutError` (if you set the timeout to something other than 0).
+
 Dequeue an entry:
 
 ```js

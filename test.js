@@ -1,5 +1,6 @@
 var test = require('tape');
 var Queue = require('./').Queue;
+var TimeoutError = require('./').TimeoutError;
 var prefix = Date.now().toString() + '_';
 var childProcess = require('child_process');
 
@@ -99,6 +100,17 @@ test('Keep in `progress` when worker failed', function(t) {
 
   producer.enqueue('mymessage', function() {
     producerClient.quit();
+  });
+});
+
+test('Timeout', function(t) {
+  var consumerClient = require('redis').createClient();
+  var consumer = new Queue(prefix + 'timeout', consumerClient, 1);
+
+  consumer.dequeue(function(error) {
+    t.ok(error instanceof TimeoutError, 'Should be a TimeoutError');
+    t.end();
+    consumerClient.quit();
   });
 });
 
